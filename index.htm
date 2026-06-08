@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=DM+Mono:wght@300;400;500&amp;family=Syne:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
 :root{
   --ink:#0C0C0F;--paper:#F5F3EE;--chrome:#1A1A20;--steel:#2C2C38;
   --rule:#E8E4DC;--accent:#C8A96E;--accent2:#7C9E8A;--muted:#8A8A96;--white:#FFFFFF;
@@ -16,8 +17,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-logo{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.5px;color:var(--ink);display:flex;align-items:center;gap:8px}
 .nav-logo span{color:var(--accent)}
 .nav-links{display:flex;gap:32px;list-style:none}
-.nav-links a{font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s}
-.nav-links a:hover{color:var(--ink)}
+.nav-links a{font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--accent)}
 .nav-cta{display:flex;gap:12px;align-items:center}
 .btn-ghost{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.06em;padding:9px 20px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:all 0.2s}
 .btn-ghost:hover{background:var(--ink);color:var(--paper)}
@@ -80,7 +81,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hv-line.v{width:1px;top:0;bottom:0;left:50%}
 
 /* TRUST BAR */
-.trust-bar{padding:28px 64px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:48px;overflow-x:auto;background:var(--paper)}
+.trust-bar{padding:28px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);overflow:hidden;background:var(--paper);display:flex}
+.trust-track{display:flex;width:max-content;animation:marquee 30s linear infinite}
+.trust-track:hover{animation-play-state:paused}
+.trust-group{display:flex;align-items:center;gap:48px;padding-right:48px}
+@keyframes marquee{to{transform:translateX(-50%)}}
 .trust-item{display:flex;align-items:center;gap:10px;white-space:nowrap;flex-shrink:0}
 .trust-icon{width:28px;height:28px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:13px}
 .trust-text{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
@@ -236,6 +241,34 @@ footer{background:var(--ink);padding:60px 64px 40px}
 .footer-copy{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.08em}
 .footer-compliance{display:flex;gap:12px}
 .comp-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25)}
+
+/* ROI CALCULATOR */
+.section-roi{padding:100px 64px;background:var(--paper);border-top:1px solid var(--rule);text-align:center}
+.roi-box{max-width:720px;margin:40px auto 0;background:var(--white);padding:48px;border:1px solid var(--rule);box-shadow:0 8px 30px rgba(0,0,0,0.03)}
+.roi-slider-container{margin:32px 0}
+.roi-slider{width:100%;accent-color:var(--ink);cursor:pointer}
+.roi-slider-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:12px}
+.roi-results{display:flex;justify-content:space-around;margin-top:40px;padding-top:32px;border-top:1px solid var(--rule)}
+.roi-val{font-family:'DM Serif Display',serif;font-size:42px;color:var(--ink);display:block}
+.roi-val.highlight{color:var(--accent2)}
+.roi-lbl{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:8px;display:block}
+
+/* TESTIMONIALS */
+.section-test{padding:120px 64px;background:var(--chrome);color:var(--white);text-align:center;border-top:1px solid rgba(255,255,255,0.08)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px;margin-top:56px}
+.test-card{background:var(--steel);padding:36px;border:1px solid rgba(255,255,255,0.08);text-align:left}
+.test-quote{font-size:15px;line-height:1.75;color:rgba(255,255,255,0.85);margin-bottom:28px;font-style:italic}
+.test-author{display:flex;align-items:center;gap:16px}
+.ta-avatar{width:48px;height:48px;border-radius:50%;background:rgba(200,169,110,0.15);border:1px solid rgba(200,169,110,0.3);display:flex;align-items:center;justify-content:center;color:var(--accent);font-family:'DM Serif Display',serif;font-size:20px}
+.ta-name{font-weight:700;font-size:14px;color:var(--white)}
+.ta-role{color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.05em;margin-top:4px}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:all 0.8s cubic-bezier(0.16, 1, 0.3, 1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.delay-1{transition-delay:0.1s}
+.delay-2{transition-delay:0.2s}
+.delay-3{transition-delay:0.3s}
 </style>
 </head>
 <body>
@@ -284,10 +317,10 @@ footer{background:var(--ink);padding:60px 64px 40px}
     Smart<span>Track</span>
   </div>
   <ul class="nav-links">
-    <li><a href="#">Product</a></li>
-    <li><a href="#">How it Works</a></li>
-    <li><a href="#">Pricing</a></li>
-    <li><a href="#">For Employees</a></li>
+    <li><a href="#product">Product</a></li>
+    <li><a href="#how-it-works">How it Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#employees">For Employees</a></li>
   </ul>
   <div class="nav-cta">
     <button class="btn-ghost">Log In</button>
@@ -295,7 +328,7 @@ footer{background:var(--ink);padding:60px 64px 40px}
   </div>
 </nav>
 
-<section class="hero">
+<section class="hero reveal">
   <div class="hero-left">
     <div class="hero-eyebrow">Employee Verification Platform · India</div>
     <h1 class="hero-h1">
@@ -423,21 +456,28 @@ footer{background:var(--ink);padding:60px 64px 40px}
   </div>
 </section>
 
-<div class="trust-bar">
-  <div class="trust-item"><div class="trust-icon">✓</div><span class="trust-text">DPDP Act 2023</span></div>
-  <div class="trust-sep"></div>
-  <div class="trust-item"><div class="trust-icon">⚿</div><span class="trust-text">AES-256 Encrypted</span></div>
-  <div class="trust-sep"></div>
-  <div class="trust-item"><div class="trust-icon">⊙</div><span class="trust-text">99.9% Uptime SLA</span></div>
-  <div class="trust-sep"></div>
-  <div class="trust-item"><div class="trust-icon">◎</div><span class="trust-text">GSTIN-Verified Only</span></div>
-  <div class="trust-sep"></div>
-  <div class="trust-item"><div class="trust-icon">⟳</div><span class="trust-text">Real-Time Notifications</span></div>
-  <div class="trust-sep"></div>
-  <div class="trust-item"><div class="trust-icon">◈</div><span class="trust-text">Consent-First</span></div>
+<div class="trust-bar reveal delay-1">
+  <div class="trust-track">
+    <div class="trust-group">
+      <div class="trust-item"><div class="trust-icon">✓</div><span class="trust-text">DPDP Act 2023</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">⚿</div><span class="trust-text">AES-256 Encrypted</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">⊙</div><span class="trust-text">99.9% Uptime SLA</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">◎</div><span class="trust-text">GSTIN-Verified Only</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">⟳</div><span class="trust-text">Real-Time Notifications</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">◈</div><span class="trust-text">Consent-First</span></div><div class="trust-sep"></div>
+    </div>
+    <div class="trust-group">
+      <div class="trust-item"><div class="trust-icon">✓</div><span class="trust-text">DPDP Act 2023</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">⚿</div><span class="trust-text">AES-256 Encrypted</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">⊙</div><span class="trust-text">99.9% Uptime SLA</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">◎</div><span class="trust-text">GSTIN-Verified Only</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">⟳</div><span class="trust-text">Real-Time Notifications</span></div><div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-icon">◈</div><span class="trust-text">Consent-First</span></div><div class="trust-sep"></div>
+    </div>
+  </div>
 </div>
 
-<section class="section-company">
+<section id="product" class="section-company reveal">
   <div class="sc-text">
     <div class="section-eyebrow">For Companies</div>
     <h2 class="section-h2">Search any candidate.<br><em>Know in 2 seconds.</em></h2>
@@ -524,7 +564,33 @@ footer{background:var(--ink);padding:60px 64px 40px}
   </div>
 </section>
 
-<section class="section-how">
+<section class="section-roi reveal">
+  <div class="section-eyebrow">ROI Calculator</div>
+  <h2 class="section-h2" style="font-size: clamp(28px,3vw,42px)">See how much you save</h2>
+  <div class="roi-box reveal delay-1">
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">Hires per month</div>
+    <div class="roi-slider-container">
+      <input type="range" id="hireSlider" class="roi-slider" min="10" max="500" step="10" value="50">
+      <div class="roi-slider-labels">
+        <span>10</span>
+        <span id="hireCountVal" style="color:var(--ink);font-weight:700;font-size:14px">50</span>
+        <span>500</span>
+      </div>
+    </div>
+    <div class="roi-results">
+      <div>
+        <span class="roi-val" id="timeSaved">150 hrs</span>
+        <span class="roi-lbl">Time Saved</span>
+      </div>
+      <div>
+        <span class="roi-val highlight" id="moneySaved">₹1.2L</span>
+        <span class="roi-lbl">Money Saved</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="section-how reveal">
   <div class="section-eyebrow">How it works</div>
   <h2 class="section-h2">Five steps from <em>hiring doubt</em><br>to verified certainty</h2>
   <div class="steps-grid">
@@ -556,7 +622,44 @@ footer{background:var(--ink);padding:60px 64px 40px}
   </div>
 </section>
 
-<section class="section-plans">
+<section class="section-test reveal">
+  <div class="section-eyebrow" style="color:var(--accent)">Trusted by HR Leaders</div>
+  <h2 class="section-h2">Don't just take <em>our word</em> for it</h2>
+  <div class="test-grid">
+    <div class="test-card reveal delay-1">
+      <div class="test-quote">"SmartTrack cut our background check time from 3 weeks to literally 2 seconds. The OCR payslip verification alone has saved us countless hours of manual cross-checking."</div>
+      <div class="test-author">
+        <div class="ta-avatar">S</div>
+        <div>
+          <div class="ta-name">Sneha Rao</div>
+          <div class="ta-role">CHRO, TechNova</div>
+        </div>
+      </div>
+    </div>
+    <div class="test-card reveal delay-2">
+      <div class="test-quote">"The fact that candidates get notified and can dispute records makes this incredibly fair and DPDP compliant. We've completely ditched our traditional agency."</div>
+      <div class="test-author">
+        <div class="ta-avatar">A</div>
+        <div>
+          <div class="ta-name">Arjun Mehta</div>
+          <div class="ta-role">VP Talent, FinServe</div>
+        </div>
+      </div>
+    </div>
+    <div class="test-card reveal delay-3">
+      <div class="test-quote">"We caught 4 doctored resumes in our first week using SmartTrack. The ROI was immediate. The interface is stunning and my team loves using it."</div>
+      <div class="test-author">
+        <div class="ta-avatar">P</div>
+        <div>
+          <div class="ta-name">Priya Desai</div>
+          <div class="ta-role">Head of HR, Zenith</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="section-plans reveal">
   <div class="section-eyebrow">Pricing</div>
   <h2 class="section-h2">A plan for every <em>size of team</em></h2>
   <div class="plans-grid">
@@ -624,7 +727,7 @@ footer{background:var(--ink);padding:60px 64px 40px}
   </div>
 </section>
 
-<section class="section-employee">
+<section id="employees" class="section-employee reveal">
   <div class="se-grid">
     <div class="se-text">
       <div class="section-eyebrow">For Employees</div>
@@ -746,5 +849,54 @@ footer{background:var(--ink);padding:60px 64px 40px}
   </div>
 </footer>
 
+<script>
+  // ROI Calculator Logic
+  const hireSlider = document.getElementById('hireSlider');
+  const hireCountVal = document.getElementById('hireCountVal');
+  const timeSaved = document.getElementById('timeSaved');
+  const moneySaved = document.getElementById('moneySaved');
+
+  function updateROI() {
+    const hires = parseInt(hireSlider.value);
+    hireCountVal.textContent = hires;
+    
+    // Assume 3 hours saved per hire
+    const hrs = hires * 3;
+    timeSaved.textContent = hrs + ' hrs';
+    
+    // Assume ₹2400 saved per hire (traditional agency cost - smarttrack cost)
+    const savedAmt = hires * 2400;
+    if(savedAmt >= 100000) {
+      moneySaved.textContent = '₹' + (savedAmt/100000).toFixed(1) + 'L';
+    } else {
+      moneySaved.textContent = '₹' + (savedAmt/1000).toFixed(1) + 'k';
+    }
+  }
+  
+  if (hireSlider) {
+    hireSlider.addEventListener('input', updateROI);
+    updateROI(); // Initial calc
+  }
+
+  // Scroll Animations (Intersection Observer)
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+</script>
 </body>
 </html>
