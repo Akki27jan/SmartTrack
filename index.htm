@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartTrack - Employee Verification Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=DM+Mono:wght@300;400;500&amp;family=Syne:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0C0C0F;--paper:#F5F3EE;--chrome:#1A1A20;--steel:#2C2C38;
+  --rule:#E8E4DC;--accent:#C8A96E;--accent2:#7C9E8A;--muted:#8A8A96;--white:#FFFFFF;
+}
+body{font-family:'Syne',sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(245,243,238,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.5px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{display:flex;gap:12px;align-items:center}
+.btn-ghost{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.06em;padding:9px 20px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:all 0.2s}
+.btn-ghost:hover{background:var(--ink);color:var(--paper)}
+.btn-solid{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;padding:9px 20px;border:none;background:var(--ink);color:var(--paper);cursor:pointer;transition:all 0.2s}
+.btn-solid:hover{background:var(--chrome)}
+
+/* HERO — two-column layout */
+.hero{
+  min-height:100vh;
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:64px;align-items:center;
+  padding:120px 72px 80px 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 700px 500px at 25% 50%,rgba(200,169,110,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-left{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:28px}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--accent)}
+.hero-h1{font-family:'DM Serif Display',serif;font-size:clamp(42px,5.5vw,84px);line-height:1.02;letter-spacing:-2px;color:var(--ink);margin-bottom:28px}
+.hero-h1 em{font-style:italic;color:var(--accent)}
+.hero-sub{font-size:16px;line-height:1.75;color:var(--muted);max-width:460px;margin:0 0 44px;font-weight:400}
+.hero-actions{display:flex;gap:16px;align-items:center;justify-content:flex-start;flex-wrap:wrap;margin-bottom:56px}
+.btn-hero-primary{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.05em;padding:15px 36px;background:var(--ink);color:var(--paper);border:none;cursor:pointer;transition:all 0.25s;position:relative}
+.btn-hero-primary:hover{background:var(--chrome);transform:translateY(-1px)}
+.trial-tag{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-top:5px;font-weight:400}
+.btn-hero-ghost{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:0.05em;padding:15px 36px;background:transparent;color:var(--ink);border:1.5px solid var(--rule);cursor:pointer;transition:border-color 0.2s}
+.btn-hero-ghost:hover{border-color:var(--ink)}
+.hero-stats{display:flex;gap:48px;justify-content:flex-start;padding-top:28px;border-top:1px solid var(--rule);width:100%;flex-wrap:wrap}
+.stat-item{text-align:left}
+.stat-num{font-family:'DM Serif Display',serif;font-size:34px;color:var(--ink);display:block}
+.stat-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;display:block}
+
+/* HERO RIGHT — editorial visual */
+.hero-right{position:relative;display:flex;align-items:center;justify-content:center;width:100%}
+.hero-visual{position:relative;width:100%;max-width:480px;aspect-ratio:1/1.05}
+.hv-watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:clamp(120px,14vw,180px);font-style:italic;color:var(--ink);opacity:0.04;letter-spacing:-4px;pointer-events:none;user-select:none;line-height:1}
+.hv-grid{position:absolute;inset:0;background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:48px 48px;opacity:0.5}
+.hv-grid::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 40%,var(--paper) 100%)}
+.hv-center-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:5}
+.hv-cb-ring{width:140px;height:140px;border:1px solid var(--rule);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:var(--paper)}
+.hv-cb-ring::before{content:'';position:absolute;inset:10px;border:1px solid rgba(200,169,110,0.2);border-radius:50%}
+.hv-cb-icon{display:flex;align-items:center;justify-content:center}
+.hv-cb-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)}
+.hv-pill{position:absolute;display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--rule);padding:10px 16px;white-space:nowrap;box-shadow:0 2px 16px rgba(0,0,0,0.06);z-index:10}
+.hv-pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.hv-pill-dot.green{background:var(--accent2)}
+.hv-pill-dot.gold{background:var(--accent)}
+.hv-pill-text{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--ink)}
+.hv-pill-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+.hv-pill.p1{top:8%;left:-4%}
+.hv-pill.p2{top:22%;right:-6%}
+.hv-pill.p3{bottom:22%;left:-8%}
+.hv-pill.p4{bottom:8%;right:-2%}
+.hv-line{position:absolute;background:var(--rule);pointer-events:none}
+.hv-line.h{height:1px;left:0;right:0;top:50%}
+.hv-line.v{width:1px;top:0;bottom:0;left:50%}
+
+/* TRUST BAR */
+.trust-bar{padding:28px 64px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:48px;overflow-x:auto;background:var(--paper)}
+.trust-item{display:flex;align-items:center;gap:10px;white-space:nowrap;flex-shrink:0}
+.trust-icon{width:28px;height:28px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:13px}
+.trust-text{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.trust-sep{width:1px;height:20px;background:var(--rule);flex-shrink:0}
+
+/* FOR COMPANY SECTION */
+.section-company{
+  padding:120px 64px;
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:80px;align-items:center;
+}
+.section-eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+.section-eyebrow::before{content:'';width:28px;height:1px;background:var(--accent)}
+.section-h2{font-family:'DM Serif Display',serif;font-size:clamp(32px,3.5vw,54px);line-height:1.1;letter-spacing:-1px;margin-bottom:20px}
+.section-h2 em{font-style:italic;color:var(--muted)}
+.sc-desc{font-size:15px;line-height:1.75;color:var(--muted);margin-bottom:32px}
+.sc-perks{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+.perk{display:flex;align-items:flex-start;gap:14px}
+.perk-icon{width:28px;height:28px;flex-shrink:0;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px}
+.perk-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.perk-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.sc-cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn-sm-primary{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.05em;padding:12px 28px;background:var(--ink);color:var(--paper);border:none;cursor:pointer;transition:all 0.2s}
+.btn-sm-primary:hover{background:var(--chrome)}
+.btn-sm-ghost{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;padding:12px 28px;background:transparent;color:var(--ink);border:1.5px solid var(--rule);cursor:pointer;transition:border-color 0.2s}
+.btn-sm-ghost:hover{border-color:var(--ink)}
+
+/* VERIFY PANEL */
+.verify-panel{background:var(--chrome);padding:40px 36px;position:relative;overflow:hidden;width:100%;max-width:480px;justify-self:center}
+.verify-panel::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(200,169,110,0.1) 0%,transparent 70%);pointer-events:none}
+.vp-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:14px}
+.search-bar{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:13px 18px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-icon{color:rgba(255,255,255,0.3);font-size:13px}
+.sb-input{flex:1;background:none;border:none;outline:none;font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,0.75)}
+.sb-input::placeholder{color:rgba(255,255,255,0.25)}
+.sb-btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:7px 16px;background:var(--accent);color:var(--ink);border:none;cursor:pointer;font-weight:500}
+.response-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:14px}
+.rt-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:pulse 1.5s infinite}
+.rt-text{color:rgba(255,255,255,0.3);margin-left:2px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.verify-card{background:#2C2C38;border:1px solid rgba(255,255,255,0.07);padding:24px;margin-bottom:12px;animation:cardIn 0.5s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.vc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.vc-name{font-family:'DM Serif Display',serif;font-size:20px;color:var(--white)}
+.vc-pan{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px}
+.vc-badge{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;display:flex;align-items:center;gap:6px}
+.badge-v{background:rgba(124,158,138,0.18);color:var(--accent2);border:1px solid rgba(124,158,138,0.3)}
+.badge-p{background:rgba(200,169,110,0.12);color:var(--accent);border:1px solid rgba(200,169,110,0.25)}
+.vc-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.vf-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:3px}
+.vf-val{font-size:14px;font-weight:600;color:rgba(255,255,255,0.85)}
+.vc-bar{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)}
+.vc-bar-track{flex:1;height:3px;background:rgba(255,255,255,0.08);overflow:hidden}
+.vc-bar-fill{height:100%;background:var(--accent2);animation:fillBar 1.2s ease both;width:76%}
+.vc-bar-fill-g{background:var(--accent);width:82%}
+@keyframes fillBar{from{width:0}}
+.vc-bar-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent2);font-weight:500}
+.vc-bar-lbl-g{color:var(--accent)}
+.verify-card-sm{background:#2C2C38;border:1px solid rgba(255,255,255,0.07);padding:16px 24px;animation:cardIn 0.5s 0.15s ease both}
+.vcs-header{display:flex;justify-content:space-between;align-items:center}
+.vcs-name{font-size:14px;font-weight:600;color:rgba(255,255,255,0.8)}
+.vcs-dates{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px}
+.vcs-bar{display:flex;align-items:center;gap:10px;margin-top:10px}
+
+/* HOW IT WORKS */
+.section-how{padding:120px 64px;background:var(--chrome);position:relative;overflow:hidden}
+.section-how::before{content:'HOW';position:absolute;font-family:'DM Serif Display',serif;font-size:260px;opacity:0.03;color:var(--white);left:-20px;bottom:-40px;pointer-events:none;line-height:1}
+.section-how .section-h2{color:var(--white);margin-bottom:72px}
+.section-how .section-h2 em{color:rgba(255,255,255,0.35)}
+.section-how .section-eyebrow{color:var(--accent)}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:32px;position:relative}
+.step{padding:0 20px 0 0;position:relative;z-index:1}
+.step-num{width:56px;height:56px;background:var(--chrome);border:1.5px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:22px;color:var(--white);margin-bottom:22px;position:relative;z-index:2;transition:all 0.2s}
+.step:hover .step-num{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+.step-title{font-size:14px;font-weight:700;margin-bottom:10px;color:rgba(255,255,255,0.9);letter-spacing:-0.2px}
+.step-desc{font-size:13px;line-height:1.65;color:rgba(255,255,255,0.4);font-weight:400}
+
+/* PLANS */
+.section-plans{padding:120px 64px;position:relative}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:24px;margin-top:56px}
+.plan-card{background:var(--paper);padding:32px 26px;position:relative;transition:background 0.2s;border:1px solid var(--rule)}
+.plan-card:hover{background:#EDEBE4}
+.plan-card.featured{background:var(--chrome);border-color:var(--chrome)}
+.plan-card.featured:hover{background:var(--steel)}
+.plan-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.plan-card.featured .plan-label{color:rgba(255,255,255,0.35)}
+.feat-tag{font-size:9px;padding:3px 8px;background:var(--accent);color:var(--ink);font-weight:700;letter-spacing:0.1em}
+.plan-name{font-family:'DM Serif Display',serif;font-size:26px;color:var(--ink);margin-bottom:6px}
+.plan-card.featured .plan-name{color:var(--white)}
+.plan-price{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:24px}
+.plan-price strong{font-size:30px;color:var(--ink);font-family:'DM Serif Display',serif}
+.plan-card.featured .plan-price{color:rgba(255,255,255,0.4)}
+.plan-card.featured .plan-price strong{color:var(--white)}
+.plan-divider{height:1px;background:var(--rule);margin-bottom:22px}
+.plan-card.featured .plan-divider{background:rgba(255,255,255,0.08)}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px}
+.plan-features li{font-size:13px;color:var(--ink);display:flex;align-items:center;gap:9px;font-weight:400}
+.plan-card.featured .plan-features li{color:rgba(255,255,255,0.65)}
+.pf-check{width:16px;height:16px;flex-shrink:0;background:rgba(124,158,138,0.15);border:1px solid rgba(124,158,138,0.4);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--accent2)}
+.pf-x{width:16px;height:16px;flex-shrink:0;background:rgba(0,0,0,0.04);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:9px;color:#ccc}
+.plan-card.featured .pf-x{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.2)}
+.plan-cta{margin-top:24px;width:100%;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:11px 0;border:1px solid var(--rule);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.plan-cta:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.plan-card.featured .plan-cta{background:var(--accent);color:var(--ink);border-color:var(--accent)}
+.plan-card.featured .plan-cta:hover{background:#B8995E}
+.plan-trial-note{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--muted);margin-top:8px;text-align:center}
+
+/* FOR EMPLOYEE */
+.section-employee{padding:120px 64px;background:var(--ink);position:relative;overflow:hidden}
+.section-employee::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,169,110,0.08) 0%,transparent 70%);pointer-events:none}
+.se-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:80px;align-items:center}
+.se-text .section-eyebrow{color:var(--accent)}
+.se-text .section-h2{color:var(--white)}
+.se-text .section-h2 em{color:rgba(255,255,255,0.3)}
+.se-desc{font-size:15px;line-height:1.75;color:rgba(255,255,255,0.45);margin-bottom:36px}
+.se-cards{display:flex;flex-direction:column;gap:12px}
+.se-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:20px;display:flex;gap:16px;transition:border-color 0.2s;cursor:default}
+.se-card:hover{border-color:rgba(255,255,255,0.2)}
+.se-card-icon{width:32px;height:32px;flex-shrink:0;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent)}
+.se-card-title{font-size:14px;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:4px}
+.se-card-desc{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.55}
+.se-free-badge{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);margin-top:28px;padding:10px 20px;border:1px solid rgba(124,158,138,0.3);background:rgba(124,158,138,0.06)}
+.se-profile-mockup{background:#1A1A20;border:1px solid rgba(255,255,255,0.08);padding:28px;position:relative;z-index:1;width:100%;max-width:480px;justify-self:center}
+.spm-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:18px}
+.spm-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.spm-avatar{width:44px;height:44px;border-radius:50%;background:rgba(200,169,110,0.15);border:1px solid rgba(200,169,110,0.25);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent)}
+.spm-name{font-family:'DM Serif Display',serif;font-size:18px;color:var(--white)}
+.spm-sub{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);margin-top:3px}
+.spm-rows{display:flex;flex-direction:column;gap:0}
+.spm-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.spm-row:last-child{border-bottom:none}
+.spm-rlabel{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.08em}
+.spm-rval{font-size:13px;font-weight:600;color:rgba(255,255,255,0.75)}
+.spm-tag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:rgba(124,158,138,0.15);color:var(--accent2);border:1px solid rgba(124,158,138,0.25)}
+.spm-searched{margin-top:18px;padding:14px;background:rgba(200,169,110,0.06);border:1px solid rgba(200,169,110,0.15)}
+.spm-s-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.spm-s-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:5px}
+.spm-s-co{color:rgba(255,255,255,0.65);font-weight:600}
+.spm-s-date{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3)}
+.spm-s-act{font-size:11px;padding:2px 8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace}
+
+/* FOOTER */
+footer{background:var(--ink);padding:60px 64px 40px}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:32px;flex-wrap:wrap;gap:32px}
+.footer-brand{font-family:'DM Serif Display',serif;font-size:26px;color:var(--white)}
+.footer-brand span{color:var(--accent)}
+.footer-tagline{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;color:rgba(255,255,255,0.25);margin-top:8px}
+.footer-links{display:flex;gap:48px;flex-wrap:wrap}
+.footer-col-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:16px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col a{font-size:13px;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s}
+.footer-col a:hover{color:var(--white)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-copy{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.08em}
+.footer-compliance{display:flex;gap:12px}
+.comp-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="32" height="32" style="flex-shrink:0">
+      <defs>
+        <linearGradient id="nShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#2C2C38"></stop><stop offset="100%" stop-color="#0C0C0F"></stop>
+        </linearGradient>
+        <linearGradient id="nGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#DFC08A"></stop><stop offset="100%" stop-color="#A8843E"></stop>
+        </linearGradient>
+        <linearGradient id="nGreenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#9DBFAC"></stop><stop offset="100%" stop-color="#5A8070"></stop>
+        </linearGradient>
+        <linearGradient id="nLensGrad" x1="20%" y1="20%" x2="80%" y2="80%">
+          <stop offset="0%" stop-color="#1A1A20"></stop><stop offset="100%" stop-color="#2C2C38"></stop>
+        </linearGradient>
+        <linearGradient id="nShieldHL" x1="0%" y1="0%" x2="60%" y2="100%">
+          <stop offset="0%" stop-color="#C8A96E" stop-opacity="0.18"></stop><stop offset="100%" stop-color="#C8A96E" stop-opacity="0"></stop>
+        </linearGradient>
+        <clipPath id="nShieldClip">
+          <path d="M100 14 L168 42 L168 98 Q168 148 100 182 Q32 148 32 98 L32 42 Z"></path>
+        </clipPath>
+      </defs>
+      <path d="M100 14 L168 42 L168 98 Q168 148 100 182 Q32 148 32 98 L32 42 Z" fill="url(#nShieldGrad)"></path>
+      <path d="M100 22 L160 46 L160 98 Q160 143 100 174 Q40 143 40 98 L40 46 Z" fill="none" stroke="url(#nGoldGrad)" stroke-width="1.2" opacity="0.5"></path>
+      <path d="M100 14 L168 42 L168 98 Q168 148 100 182 Q32 148 32 98 L32 42 Z" fill="url(#nShieldHL)" clip-path="url(#nShieldClip)"></path>
+      <polyline points="55,96 74,116 88,94" fill="none" stroke="url(#nGreenGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"></polyline>
+      <circle cx="118" cy="90" r="32" fill="url(#nLensGrad)" stroke="url(#nGoldGrad)" stroke-width="2.5"></circle>
+      <circle cx="108" cy="82" r="3" fill="#C8A96E" opacity="0.9"></circle>
+      <circle cx="128" cy="82" r="3" fill="#C8A96E" opacity="0.9"></circle>
+      <circle cx="118" cy="98" r="3" fill="#C8A96E" opacity="0.9"></circle>
+      <circle cx="108" cy="98" r="2" fill="#7C9E8A" opacity="0.8"></circle>
+      <circle cx="130" cy="95" r="2" fill="#7C9E8A" opacity="0.8"></circle>
+      <line x1="108" y1="82" x2="128" y2="82" stroke="#C8A96E" stroke-width="1.5" opacity="0.7"></line>
+      <line x1="108" y1="82" x2="108" y2="98" stroke="#C8A96E" stroke-width="1.5" opacity="0.7"></line>
+      <line x1="128" y1="82" x2="118" y2="98" stroke="#7C9E8A" stroke-width="1.5" opacity="0.7"></line>
+      <line x1="108" y1="98" x2="118" y2="98" stroke="#C8A96E" stroke-width="1.5" opacity="0.7"></line>
+      <line x1="143" y1="113" x2="158" y2="130" stroke="url(#nGoldGrad)" stroke-width="7" stroke-linecap="round"></line>
+      <path d="M100 14 L168 42" fill="none" stroke="url(#nGoldGrad)" stroke-width="2.5" opacity="0.6"></path>
+      <path d="M100 14 L32 42" fill="none" stroke="url(#nGoldGrad)" stroke-width="2.5" opacity="0.6"></path>
+    </svg>
+    Smart<span>Track</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">Product</a></li>
+    <li><a href="#">How it Works</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">For Employees</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn-ghost">Log In</button>
+    <button class="btn-solid">Start Free Trial</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Employee Verification Platform · India</div>
+    <h1 class="hero-h1">
+      Hire with<br>
+      <em>certainty,</em><br>
+      not hope.
+    </h1>
+    <p class="hero-sub">
+      Verify any candidate's salary, designation, conduct record, and reason for leaving —
+      in under 2 seconds. No phone calls. No agencies. No surprises.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-hero-primary">
+        Start Free Trial
+        <span class="trial-tag">7 days · no credit card</span>
+      </button>
+      <button class="btn-hero-ghost">See How It Works</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">2s</span>
+        <span class="stat-label">Verification time</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">1 in 3</span>
+        <span class="stat-label">Resumes have errors</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">₹0</span>
+        <span class="stat-label">For employees always</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="hv-grid"></div>
+      <div class="hv-watermark">V.</div>
+      <div class="hv-line h"></div>
+      <div class="hv-line v"></div>
+
+      <div class="hv-center-badge">
+        <div class="hv-cb-ring">
+          <div class="hv-cb-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="72" height="72">
+              <defs>
+                <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#2C2C38"></stop>
+                  <stop offset="100%" stop-color="#0C0C0F"></stop>
+                </linearGradient>
+                <linearGradient id="shieldHighlight" x1="0%" y1="0%" x2="60%" y2="100%">
+                  <stop offset="0%" stop-color="#C8A96E" stop-opacity="0.18"></stop>
+                  <stop offset="100%" stop-color="#C8A96E" stop-opacity="0"></stop>
+                </linearGradient>
+                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#DFC08A"></stop>
+                  <stop offset="100%" stop-color="#A8843E"></stop>
+                </linearGradient>
+                <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#9DBFAC"></stop>
+                  <stop offset="100%" stop-color="#5A8070"></stop>
+                </linearGradient>
+                <linearGradient id="lensGrad" x1="20%" y1="20%" x2="80%" y2="80%">
+                  <stop offset="0%" stop-color="#1A1A20"></stop>
+                  <stop offset="100%" stop-color="#2C2C38"></stop>
+                </linearGradient>
+                <clipPath id="shieldClip">
+                  <path d="M100 14 L168 42 L168 98 Q168 148 100 182 Q32 148 32 98 L32 42 Z"></path>
+                </clipPath>
+              </defs>
+              <path d="M100 14 L168 42 L168 98 Q168 148 100 182 Q32 148 32 98 L32 42 Z" fill="url(#shieldGrad)"></path>
+              <path d="M100 22 L160 46 L160 98 Q160 143 100 174 Q40 143 40 98 L40 46 Z" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.5"></path>
+              <path d="M100 14 L168 42 L168 98 Q168 148 100 182 Q32 148 32 98 L32 42 Z" fill="url(#shieldHighlight)" clip-path="url(#shieldClip)"></path>
+              <polyline points="55,96 74,116 88,94" fill="none" stroke="url(#greenGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"></polyline>
+              <circle cx="118" cy="90" r="32" fill="url(#lensGrad)" stroke="url(#goldGrad)" stroke-width="2.5"></circle>
+              <circle cx="108" cy="82" r="3" fill="#C8A96E" opacity="0.9"></circle>
+              <circle cx="128" cy="82" r="3" fill="#C8A96E" opacity="0.9"></circle>
+              <circle cx="118" cy="98" r="3" fill="#C8A96E" opacity="0.9"></circle>
+              <circle cx="108" cy="98" r="2" fill="#7C9E8A" opacity="0.8"></circle>
+              <circle cx="130" cy="95" r="2" fill="#7C9E8A" opacity="0.8"></circle>
+              <line x1="108" y1="82" x2="128" y2="82" stroke="#C8A96E" stroke-width="1.5" opacity="0.7"></line>
+              <line x1="108" y1="82" x2="108" y2="98" stroke="#C8A96E" stroke-width="1.5" opacity="0.7"></line>
+              <line x1="128" y1="82" x2="118" y2="98" stroke="#7C9E8A" stroke-width="1.5" opacity="0.7"></line>
+              <line x1="108" y1="98" x2="118" y2="98" stroke="#C8A96E" stroke-width="1.5" opacity="0.7"></line>
+              <line x1="118" y1="98" x2="130" y2="95" stroke="#7C9E8A" stroke-width="1.2" opacity="0.6"></line>
+              <line x1="143" y1="113" x2="158" y2="130" stroke="url(#goldGrad)" stroke-width="7" stroke-linecap="round"></line>
+              <line x1="143" y1="113" x2="158" y2="130" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.12"></line>
+              <path d="M100 14 L168 42" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" opacity="0.6"></path>
+              <path d="M100 14 L32 42" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" opacity="0.6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="hv-cb-label">Verified · Trusted</div>
+      </div>
+
+      <div class="hv-pill p1">
+        <span class="hv-pill-dot green"></span>
+        <div>
+          <div class="hv-pill-text">2-Second Result</div>
+          <div class="hv-pill-sub">Avg. verification time</div>
+        </div>
+      </div>
+      <div class="hv-pill p2">
+        <span class="hv-pill-dot gold"></span>
+        <div>
+          <div class="hv-pill-text">PAN-Linked Records</div>
+          <div class="hv-pill-sub">Tamper-proof source</div>
+        </div>
+      </div>
+      <div class="hv-pill p3">
+        <span class="hv-pill-dot green"></span>
+        <div>
+          <div class="hv-pill-text">DPDP Compliant</div>
+          <div class="hv-pill-sub">Consent-first by design</div>
+        </div>
+      </div>
+      <div class="hv-pill p4">
+        <span class="hv-pill-dot gold"></span>
+        <div>
+          <div class="hv-pill-text">1 in 3 Resumes</div>
+          <div class="hv-pill-sub">Contain inaccuracies</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust-bar">
+  <div class="trust-item"><div class="trust-icon">✓</div><span class="trust-text">DPDP Act 2023</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><div class="trust-icon">⚿</div><span class="trust-text">AES-256 Encrypted</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><div class="trust-icon">⊙</div><span class="trust-text">99.9% Uptime SLA</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><div class="trust-icon">◎</div><span class="trust-text">GSTIN-Verified Only</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><div class="trust-icon">⟳</div><span class="trust-text">Real-Time Notifications</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><div class="trust-icon">◈</div><span class="trust-text">Consent-First</span></div>
+</div>
+
+<section class="section-company">
+  <div class="sc-text">
+    <div class="section-eyebrow">For Companies</div>
+    <h2 class="section-h2">Search any candidate.<br><em>Know in 2 seconds.</em></h2>
+    <p class="sc-desc">
+      Type a PAN number. Instantly get back a verified employment report — salary confirmed
+      against payslips, performance ratings, conduct flags, and exact exit reason. All in
+      under 2 seconds.
+    </p>
+    <div class="sc-perks">
+      <div class="perk">
+        <div class="perk-icon">⊛</div>
+        <div>
+          <div class="perk-title">OCR Payslip Verification</div>
+          <div class="perk-desc">Every salary figure is cross-checked against the actual payslip document — not just entered by HR.</div>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">⊗</div>
+        <div>
+          <div class="perk-title">Conduct Flags with Evidence</div>
+          <div class="perk-desc">Moonlighting, data theft, or PIP flags only go live after evidence upload and legal review.</div>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">⊜</div>
+        <div>
+          <div class="perk-title">Every Search is Logged</div>
+          <div class="perk-desc">Full audit trail. The candidate is notified every time you access their profile — with what you accessed.</div>
+        </div>
+      </div>
+    </div>
+    <div class="sc-cta">
+      <button class="btn-sm-primary">Search a Candidate</button>
+      <button class="btn-sm-ghost">Upload Employee Records</button>
+    </div>
+  </div>
+
+  <div class="verify-panel">
+    <div class="vp-label">Live Verification — Search Result</div>
+    <div class="search-bar">
+      <span class="sb-icon">⌕</span>
+      <input class="sb-input" value="ABCPS1234R" placeholder="Enter PAN or full name…">
+      <button class="sb-btn">Verify</button>
+    </div>
+    <div class="response-tag">
+      <div class="rt-dot"></div>
+      Result found
+      <span class="rt-text">— 1.3 seconds</span>
+    </div>
+
+    <div class="verify-card">
+      <div class="vc-header">
+        <div>
+          <div class="vc-name">Rahul Sharma</div>
+          <div class="vc-pan">PAN · ABCPS1234R · 4 yrs 1 mo on record</div>
+        </div>
+        <div class="vc-badge badge-v"><div class="rt-dot"></div>Verified</div>
+      </div>
+      <div class="vc-fields">
+        <div><div class="vf-label">Last Employer</div><div class="vf-val">Infosys Limited</div></div>
+        <div><div class="vf-label">Designation</div><div class="vf-val">Software Engineer</div></div>
+        <div><div class="vf-label">Final CTC</div><div class="vf-val">₹8.4 LPA ✓</div></div>
+        <div><div class="vf-label">Exit Reason</div><div class="vf-val">Voluntary</div></div>
+      </div>
+      <div class="vc-bar">
+        <div class="vc-bar-track"><div class="vc-bar-fill"></div></div>
+        <div class="vc-bar-lbl">3.8 / 5.0</div>
+      </div>
+    </div>
+
+    <div class="verify-card-sm">
+      <div class="vcs-header">
+        <div>
+          <div class="vcs-name">Wipro Technologies</div>
+          <div class="vcs-dates">Jan 2020 – May 2022 · 2 yrs 4 mo</div>
+        </div>
+        <div class="vc-badge badge-p" style="padding:4px 10px;font-size:10px"><div class="rt-dot" style="background:var(--accent)"></div>Flag Resolved</div>
+      </div>
+      <div class="vcs-bar">
+        <div class="vc-bar-track"><div class="vc-bar-fill vc-bar-fill-g"></div></div>
+        <div class="vc-bar-lbl vc-bar-lbl-g">4.1 / 5.0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-how">
+  <div class="section-eyebrow">How it works</div>
+  <h2 class="section-h2">Five steps from <em>hiring doubt</em><br>to verified certainty</h2>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Company Registers</div>
+      <div class="step-desc">Verify GSTIN, set up HR team with role-based access and MFA on every account.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Upload Exit Records</div>
+      <div class="step-desc">HR submits records at exit — salary verified via OCR payslip, conduct flags backed by evidence.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Employee Reviews</div>
+      <div class="step-desc">Every employee is notified, gets 15 days to review, dispute, or add a personal statement.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">You Search in 2s</div>
+      <div class="step-desc">Enter PAN + name. Get the full verified employment history in under 2 seconds.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">05</div>
+      <div class="step-title">Download &amp; Decide</div>
+      <div class="step-desc">Download a watermarked PDF report, legally valid only for your company.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-plans">
+  <div class="section-eyebrow">Pricing</div>
+  <h2 class="section-h2">A plan for every <em>size of team</em></h2>
+  <div class="plans-grid">
+    <div class="plan-card">
+      <div class="plan-label">7-Day Trial</div>
+      <div class="plan-name">Free</div>
+      <div class="plan-price"><strong>₹0</strong> / 7 days</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="pf-check">✓</span>10 record uploads</li>
+        <li><span class="pf-check">✓</span>10 candidate searches</li>
+        <li><span class="pf-check">✓</span>Employee notifications</li>
+        <li><span class="pf-check">✓</span>Dispute management</li>
+        <li><span class="pf-x">✕</span>PDF downloads</li>
+        <li><span class="pf-x">✕</span>Conduct flags</li>
+      </ul>
+      <button class="plan-cta">Start Free Trial</button>
+      <div class="plan-trial-note">No credit card required</div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-label">Silver</div>
+      <div class="plan-name">Basic</div>
+      <div class="plan-price"><strong>₹1,999</strong> / mo</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="pf-check">✓</span>100 record uploads</li>
+        <li><span class="pf-check">✓</span>50 searches / month</li>
+        <li><span class="pf-check">✓</span>PDF downloads</li>
+        <li><span class="pf-check">✓</span>Search tracking</li>
+        <li><span class="pf-x">✕</span>Conduct flags</li>
+        <li><span class="pf-x">✕</span>Advanced audit logs</li>
+      </ul>
+      <button class="plan-cta">Get Started</button>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-label">Gold <span class="feat-tag">Most Popular</span></div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price"><strong>₹4,999</strong> / mo</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="pf-check">✓</span>500 record uploads</li>
+        <li><span class="pf-check">✓</span>250 searches / month</li>
+        <li><span class="pf-check">✓</span>Conduct flags</li>
+        <li><span class="pf-check">✓</span>Advanced audit logs</li>
+        <li><span class="pf-check">✓</span>Priority support</li>
+        <li><span class="pf-check">✓</span>Bulk Excel upload</li>
+      </ul>
+      <button class="plan-cta">Get Started</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-label">Platinum</div>
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price"><strong>Custom</strong> pricing</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="pf-check">✓</span>Unlimited records</li>
+        <li><span class="pf-check">✓</span>Unlimited searches</li>
+        <li><span class="pf-check">✓</span>API access + SSO</li>
+        <li><span class="pf-check">✓</span>Dedicated manager</li>
+        <li><span class="pf-check">✓</span>Custom integrations</li>
+        <li><span class="pf-check">✓</span>SLA guarantee</li>
+      </ul>
+      <button class="plan-cta">Contact Sales</button>
+    </div>
+  </div>
+</section>
+
+<section class="section-employee">
+  <div class="se-grid">
+    <div class="se-text">
+      <div class="section-eyebrow">For Employees</div>
+      <h2 class="section-h2">Your record.<br><em>Your control.</em></h2>
+      <p class="se-desc">SmartTrack is not just a tool for companies. Every employee has full visibility into their own professional record — and it's free forever.</p>
+      <div class="se-cards">
+        <div class="se-card">
+          <div class="se-card-icon">◎</div>
+          <div>
+            <div class="se-card-title">See who viewed your profile</div>
+            <div class="se-card-desc">Every company that searches or downloads your report is logged. You get notified instantly via SMS and email.</div>
+          </div>
+        </div>
+        <div class="se-card">
+          <div class="se-card-icon">⊗</div>
+          <div>
+            <div class="se-card-title">Dispute anything wrong</div>
+            <div class="se-card-desc">Raise a dispute on any incorrect field within 15 days. Full arbitration — Submitted → Reviewed → Resolved.</div>
+          </div>
+        </div>
+        <div class="se-card">
+          <div class="se-card-icon">◈</div>
+          <div>
+            <div class="se-card-title">Add your personal statement</div>
+            <div class="se-card-desc">300 words, your words. Shows up right next to your record for every company that views you.</div>
+          </div>
+        </div>
+      </div>
+      <div class="se-free-badge">✓ Always free for employees · No subscription required</div>
+    </div>
+
+    <div class="se-profile-mockup">
+      <div class="spm-label">Employee Portal — My Profile</div>
+      <div class="spm-header">
+        <div class="spm-avatar">R</div>
+        <div>
+          <div class="spm-name">Rahul Sharma</div>
+          <div class="spm-sub">PAN · ABCPS1234R · 4 yrs 1 mo on record</div>
+        </div>
+      </div>
+      <div class="spm-rows">
+        <div class="spm-row">
+          <span class="spm-rlabel">Total Experience</span>
+          <span class="spm-rval">4 Years 1 Month</span>
+        </div>
+        <div class="spm-row">
+          <span class="spm-rlabel">Records on File</span>
+          <span class="spm-rval">2 Employers</span>
+        </div>
+        <div class="spm-row">
+          <span class="spm-rlabel">Active Disputes</span>
+          <span class="spm-tag">None — All Resolved</span>
+        </div>
+        <div class="spm-row">
+          <span class="spm-rlabel">Personal Statement</span>
+          <span class="spm-rval" style="font-size:12px;color:rgba(255,255,255,0.45);font-style:italic">"Software engineer with 4+ years…"</span>
+        </div>
+      </div>
+      <div class="spm-searched">
+        <div class="spm-s-label">Who Searched Me Recently</div>
+        <div class="spm-s-row">
+          <span class="spm-s-co">TechNova Solutions</span>
+          <span class="spm-s-act">PDF Downloaded</span>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><span class="spm-s-date">21 May 2026 · 11:42 AM</span></div>
+        <div class="spm-s-row">
+          <span class="spm-s-co">ABC Technologies</span>
+          <span class="spm-s-act">Summary Viewed</span>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><span class="spm-s-date">18 May 2026 · 03:15 PM</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">Smart<span>Track</span></div>
+      <div class="footer-tagline">Employee Verification &amp; Rating Platform · India · v0.1</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <ul>
+          <li><a href="#">How it Works</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">API Docs</a></li>
+          <li><a href="#">Security</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">For Users</div>
+        <ul>
+          <li><a href="#">Companies</a></li>
+          <li><a href="#">Employees</a></li>
+          <li><a href="#">HR Teams</a></li>
+          <li><a href="#">Enterprise</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">DPDP Compliance</a></li>
+          <li><a href="#">Data Deletion</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 SmartTrack · All rights reserved</div>
+    <div class="footer-compliance">
+      <div class="comp-tag">DPDP 2023</div>
+      <div class="comp-tag">IT Act 2000</div>
+      <div class="comp-tag">AES-256</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
