@@ -1041,6 +1041,9 @@ function buildPortal(type) {
       </div>
       <div class="p-sidebar-item" onclick="switchPage('hr-license',this)" data-page="hr-license">
         <span class="p-sidebar-icon">▤</span>License Quota
+      </div>
+      <div class="p-sidebar-item" onclick="switchPage('hr-directory',this)" data-page="hr-directory">
+        <span class="p-sidebar-icon">👥</span>Employee Directory
       </div>`;
 
     main.innerHTML = `
@@ -1409,7 +1412,89 @@ function buildPortal(type) {
             </div>
           </div>
         </div>
-      </div>`;
+      </div>
+
+      <!-- EMPLOYEE DIRECTORY -->
+      <div class="p-page" id="page-hr-directory">
+        <div class="p-demo-bar">
+          💡 <b>Teammate Demo Area:</b>&nbsp; Sample records are pre-loaded for demonstration purposes.
+        </div>
+        <div class="p-page-title">Employee Directory</div>
+        <div class="p-page-sub">View and manage all employee records uploaded by your organisation. Click any row to edit.</div>
+
+        <!-- SEARCH + FILTER BAR -->
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px;position:relative">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9A9188;font-size:13px">⊙</span>
+            <input id="dirSearch" type="text" placeholder="Search by name, PAN, designation…"
+              oninput="filterDirectory()"
+              style="width:100%;padding:10px 12px 10px 34px;border:1.5px solid var(--rule);background:var(--paper);font-family:'Inter',sans-serif;font-size:13px;border-radius:2px;outline:none;box-sizing:border-box"/>
+          </div>
+          <select id="dirFilterDept" onchange="filterDirectory()"
+            style="padding:10px 14px;border:1.5px solid var(--rule);background:var(--paper);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;border-radius:2px;cursor:pointer;outline:none;color:var(--ink)">
+            <option value="">All Departments</option>
+            <option>Engineering</option>
+            <option>Design</option>
+            <option>Sales</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>Operations</option>
+          </select>
+          <select id="dirFilterStatus" onchange="filterDirectory()"
+            style="padding:10px 14px;border:1.5px solid var(--rule);background:var(--paper);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;border-radius:2px;cursor:pointer;outline:none;color:var(--ink)">
+            <option value="">All Statuses</option>
+            <option>Active</option>
+            <option>Exited</option>
+            <option>Flagged</option>
+          </select>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9A9188;letter-spacing:0.06em;white-space:nowrap" id="dirCount">Showing 8 records</div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="p-card" style="padding:0;overflow:hidden">
+          <table class="p-table" style="width:100%" id="dirTable">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>PAN Number</th>
+                <th>Designation</th>
+                <th>Department</th>
+                <th>CTC (INR)</th>
+                <th>Date of Joining</th>
+                <th>Exit Reason</th>
+                <th>Rehire</th>
+                <th>Conduct</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dirTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EDIT EMPLOYEE MODAL -->
+      <div id="editEmpModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(12,12,15,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+        <div style="background:var(--paper);width:720px;max-width:95vw;max-height:88vh;overflow-y:auto;border-radius:4px;box-shadow:0 32px 80px rgba(0,0,0,0.35);border:1px solid var(--rule)">
+          <!-- Modal header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--paper);z-index:1">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink)" id="editModalName">Edit Employee Record</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9A9188;letter-spacing:0.1em;margin-top:3px" id="editModalPan">PAN: —</div>
+            </div>
+            <button onclick="closeEditModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:#9A9188;padding:4px;line-height:1">✕</button>
+          </div>
+          <!-- Modal body -->
+          <div style="padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:18px" id="editModalBody">
+            <!-- Fields injected by JS -->
+          </div>
+          <!-- Modal footer -->
+          <div style="padding:18px 28px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;gap:12px;position:sticky;bottom:0;background:var(--paper)">
+            <button onclick="closeEditModal()" class="p-demo-btn" style="padding:10px 22px;font-size:13px">Cancel</button>
+            <button onclick="saveEditModal()" class="p-submit-btn">Save Changes →</button>
+          </div>
+        </div>
+      </div>
+      `;
 
   } else {
     // EMPLOYEE PORTAL — only Employee Portal tab
@@ -2294,6 +2379,224 @@ function toggleChat() {
   }
 }
 document.getElementById('st-chat-btn').addEventListener('click', toggleChat);
+
+// ─── EMPLOYEE DIRECTORY ──────────────────────────────────────────
+let dirEmployees = [
+  { id:1, name:'Priya Mehta',       pan:'ABCPM1234F', desig:'Senior Software Engineer',  dept:'Engineering', ctc:'18,00,000', doj:'2019-03-12', lwd:'—',        exit:'—',               rehire:'Yes',         conduct:[] },
+  { id:2, name:'Siddharth Rao',     pan:'BCDSR5678G', desig:'Product Manager',            dept:'Engineering', ctc:'24,00,000', doj:'2018-07-01', lwd:'2024-02-28',exit:'Resignation',     rehire:'No',          conduct:['Absconding'] },
+  { id:3, name:'Ananya Krishnan',   pan:'CEFAK9012H', desig:'UI/UX Designer',             dept:'Design',      ctc:'12,00,000', doj:'2021-06-15', lwd:'—',        exit:'—',               rehire:'Yes',         conduct:[] },
+  { id:4, name:'Rohan Verma',       pan:'DFGRV3456J', desig:'Business Analyst',           dept:'Sales',       ctc:'14,50,000', doj:'2020-01-20', lwd:'2024-12-31',exit:'End of Contract', rehire:'Conditional', conduct:['Policy Violation'] },
+  { id:5, name:'Kavya Nair',        pan:'EGHKN7890K', desig:'HR Business Partner',        dept:'HR',          ctc:'11,00,000', doj:'2022-04-01', lwd:'—',        exit:'—',               rehire:'Yes',         conduct:[] },
+  { id:6, name:'Arjun Sharma',      pan:'FHJAS2345L', desig:'Finance Controller',         dept:'Finance',     ctc:'20,00,000', doj:'2017-09-10', lwd:'2025-03-31',exit:'Retirement',      rehire:'Yes',         conduct:[] },
+  { id:7, name:'Deepika Patel',     pan:'GIJDP6789M', desig:'Operations Manager',         dept:'Operations',  ctc:'16,00,000', doj:'2020-11-05', lwd:'—',        exit:'—',               rehire:'Yes',         conduct:[] },
+  { id:8, name:'Nikhil Mehrotra',   pan:'HJKNM1234N', desig:'DevOps Engineer',            dept:'Engineering', ctc:'19,50,000', doj:'2021-08-22', lwd:'2025-05-15',exit:'Resignation',     rehire:'Yes',         conduct:[] },
+];
+let editingId = null;
+
+function getDirStatus(emp) {
+  if (emp.conduct.length > 0) return 'Flagged';
+  if (emp.lwd !== '—') return 'Exited';
+  return 'Active';
+}
+
+function getConductHTML(tags) {
+  if (!tags.length) return '<span style="color:#9A9188;font-size:12px;font-style:italic">Clean</span>';
+  return tags.map(t => {
+    const isRed = t === 'Absconding';
+    const bg = isRed ? 'rgba(200,74,74,0.1)' : 'rgba(200,169,110,0.12)';
+    const color = isRed ? '#9A3030' : '#8A6A20';
+    const border = isRed ? 'rgba(200,74,74,0.3)' : 'rgba(200,169,110,0.4)';
+    return `<span style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.06em;padding:3px 8px;border:1px solid ${border};background:${bg};color:${color};border-radius:2px;margin:2px">${t}</span>`;
+  }).join('');
+}
+
+function getStatusBadge(status) {
+  const map = {
+    Active:  { bg:'rgba(124,158,138,0.12)', color:'#2E7D50', border:'rgba(46,125,80,0.3)' },
+    Exited:  { bg:'rgba(76,76,120,0.10)',   color:'#3A3A7A', border:'rgba(76,76,120,0.3)' },
+    Flagged: { bg:'rgba(200,74,74,0.08)',   color:'#9A3030', border:'rgba(200,74,74,0.3)' },
+  };
+  const s = map[status] || map.Active;
+  return `<span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.1em;padding:3px 9px;border:1px solid ${s.border};background:${s.bg};color:${s.color};border-radius:2px">${status.toUpperCase()}</span>`;
+}
+
+function renderDirectory() {
+  const search   = (document.getElementById('dirSearch')?.value||'').toLowerCase();
+  const dept     = document.getElementById('dirFilterDept')?.value||'';
+  const statusF  = document.getElementById('dirFilterStatus')?.value||'';
+
+  const filtered = dirEmployees.filter(e => {
+    const status = getDirStatus(e);
+    if (dept   && e.dept !== dept)       return false;
+    if (statusF && status !== statusF)   return false;
+    if (search && !`${e.name} ${e.pan} ${e.desig} ${e.dept}`.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('dirTbody');
+  if (!tbody) return;
+
+  document.getElementById('dirCount').textContent = `Showing ${filtered.length} record${filtered.length!==1?'s':''}`;
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:40px;color:#9A9188;font-style:italic;font-size:13px">No records match your filters.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(e => {
+    const status = getDirStatus(e);
+    return `<tr style="cursor:pointer" onclick="openEditModal(${e.id})" title="Click to edit">
+      <td style="font-weight:600">${e.name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5A5550">${e.pan}</td>
+      <td>${e.desig}</td>
+      <td>${e.dept}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">₹${e.ctc}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${e.doj}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${e.exit}</td>
+      <td>${e.rehire}</td>
+      <td>${getConductHTML(e.conduct)}</td>
+      <td>
+        <button onclick="event.stopPropagation();openEditModal(${e.id})"
+          style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;background:transparent;border:1.5px solid var(--rule);border-radius:2px;cursor:pointer;color:var(--ink);transition:all 0.18s"
+          onmouseover="this.style.background='var(--ink)';this.style.color='var(--paper)'"
+          onmouseout="this.style.background='transparent';this.style.color='var(--ink)'">Edit</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterDirectory() { renderDirectory(); }
+
+function openEditModal(id) {
+  const emp = dirEmployees.find(e => e.id === id);
+  if (!emp) return;
+  editingId = id;
+
+  document.getElementById('editModalName').textContent = 'Edit — ' + emp.name;
+  document.getElementById('editModalPan').textContent  = 'PAN: ' + emp.pan;
+
+  const conductOptions = ['Absconding','Policy Violation','Moonlighting','Data Theft','Misconduct','Harassment','Active Legal Case','Performance Termination'];
+  const body = document.getElementById('editModalBody');
+
+  body.innerHTML = `
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Full Name</label>
+      <input class="p-form-select" id="ef-name" value="${emp.name}" style="border-radius:2px"/>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">PAN Number</label>
+      <input class="p-form-select" id="ef-pan" value="${emp.pan}" style="border-radius:2px"/>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Designation</label>
+      <input class="p-form-select" id="ef-desig" value="${emp.desig}" style="border-radius:2px"/>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Department</label>
+      <select class="p-form-select" id="ef-dept" style="border-radius:2px">
+        ${['Engineering','Design','Sales','HR','Finance','Operations'].map(d=>`<option ${d===emp.dept?'selected':''}>${d}</option>`).join('')}
+      </select>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Annual CTC (INR)</label>
+      <input class="p-form-select" id="ef-ctc" value="${emp.ctc}" style="border-radius:2px"/>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Date of Joining</label>
+      <input class="p-form-select" type="date" id="ef-doj" value="${emp.doj!=='—'?emp.doj:''}" style="border-radius:2px"/>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Last Working Date</label>
+      <input class="p-form-select" type="date" id="ef-lwd" value="${emp.lwd!=='—'?emp.lwd:''}" style="border-radius:2px"/>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Exit Reason</label>
+      <select class="p-form-select" id="ef-exit" style="border-radius:2px">
+        ${['—','Resignation','Retirement','End of Contract','Termination','Absconding'].map(r=>`<option ${r===emp.exit?'selected':''}>${r}</option>`).join('')}
+      </select>
+    </div>
+    <div class="p-form-field" style="margin:0">
+      <label class="p-form-label">Rehire Eligibility</label>
+      <select class="p-form-select" id="ef-rehire" style="border-radius:2px">
+        ${['Yes','No','Conditional'].map(r=>`<option ${r===emp.rehire?'selected':''}>${r}</option>`).join('')}
+      </select>
+    </div>
+    <div class="p-form-field" style="margin:0;grid-column:1/-1">
+      <label class="p-form-label">Conduct Flags</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+        ${conductOptions.map(c => {
+          const sel = emp.conduct.includes(c);
+          const isRed = c==='Absconding';
+          const cls = isRed?'conduct-red':'conduct-warn';
+          return `<label class="conduct-tag ${cls} ${sel?'selected':''}" onclick="toggleConductTag(this,'${c}')"><input type="checkbox" style="display:none" ${sel?'checked':''}/>${c}</label>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  const modal = document.getElementById('editEmpModal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.style.opacity=1, 10);
+}
+
+function toggleConductTag(el, val) {
+  el.classList.toggle('selected');
+  const cb = el.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+}
+
+function closeEditModal() {
+  document.getElementById('editEmpModal').style.display = 'none';
+  editingId = null;
+}
+
+function saveEditModal() {
+  const emp = dirEmployees.find(e => e.id === editingId);
+  if (!emp) return;
+
+  emp.name   = document.getElementById('ef-name').value.trim() || emp.name;
+  emp.pan    = document.getElementById('ef-pan').value.trim()  || emp.pan;
+  emp.desig  = document.getElementById('ef-desig').value.trim()|| emp.desig;
+  emp.dept   = document.getElementById('ef-dept').value;
+  emp.ctc    = document.getElementById('ef-ctc').value.trim()  || emp.ctc;
+  const doj  = document.getElementById('ef-doj').value;
+  const lwd  = document.getElementById('ef-lwd').value;
+  emp.doj    = doj  || '—';
+  emp.lwd    = lwd  || '—';
+  emp.exit   = document.getElementById('ef-exit').value;
+  emp.rehire = document.getElementById('ef-rehire').value;
+
+  // collect checked conduct tags
+  emp.conduct = [];
+  document.querySelectorAll('#editModalBody .conduct-tag.selected').forEach(el => {
+    emp.conduct.push(el.textContent.trim().replace(/^⚠\s*/,''));
+  });
+
+  closeEditModal();
+  renderDirectory();
+
+  // brief toast
+  const toast = document.createElement('div');
+  toast.style.cssText='position:fixed;bottom:32px;right:32px;z-index:9999;background:var(--ink);color:var(--paper);padding:16px 22px;border-radius:4px;box-shadow:0 12px 40px rgba(0,0,0,0.3);border-left:4px solid var(--accent2);font-size:14px;font-weight:600;animation:slideInToast 0.3s ease';
+  toast.textContent = '✓ Record updated for ' + emp.name;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Hook: re-render directory whenever the page becomes visible
+const _dirObs = new MutationObserver(() => {
+  const page = document.getElementById('page-hr-directory');
+  if (page && page.classList.contains('active')) renderDirectory();
+});
+// observe after portal is built
+const _dirPortalObs = new MutationObserver(() => {
+  const page = document.getElementById('page-hr-directory');
+  if (page) {
+    _dirObs.observe(page, { attributes:true, attributeFilter:['class'] });
+    _dirPortalObs.disconnect();
+  }
+});
+_dirPortalObs.observe(document.getElementById('portalOverlay'), { subtree:true, childList:true });
 
 function initChat() {
   chatHistory = [];
