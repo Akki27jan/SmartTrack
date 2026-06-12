@@ -6,12 +6,14 @@ class Employee(BaseModel):
     Name: str
     Email: EmailStr
     Password: str
+    PanNumber: str
 
 
 class EmployeeSignup(BaseModel):
     Name: str
     Email: EmailStr
     Password: str
+    PanNumber: str
 
 
 class EmployeeLogin(BaseModel):

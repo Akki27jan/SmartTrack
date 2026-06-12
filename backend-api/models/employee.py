@@ -9,3 +9,4 @@ class EmployeeDB(Base):
     Name = Column(String, nullable=False)
     Email = Column(String, unique=True, nullable=False)
     Password = Column(String, nullable=False)
+    PanNumber = Column(String, unique=True, nullable=False)

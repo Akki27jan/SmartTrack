@@ -40,3 +40,10 @@ def generate_evidence_id(db: Session) -> str:
     from models.dispute import EvidenceDB
     count = db.query(EvidenceDB).count()
     return f"EVD{str(count + 1).zfill(3)}"
+
+
+def generate_record_id(db: Session) -> str:
+    """Generate a Record ID in the format REC000."""
+    from models.employee_record import EmployeeRecordDB
+    count = db.query(EmployeeRecordDB).count()
+    return f"REC{str(count + 1).zfill(3)}"

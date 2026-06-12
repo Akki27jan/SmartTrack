@@ -4,3 +4,4 @@ from schemas.hr import CompanyHR, HRSignup, HRLogin
 from schemas.notification import EmployeeNotification, CompanyNotification
 from schemas.audit import AuditLog
 from schemas.dispute import EmployeeDispute, DisputeResponse, Evidence, ResolveDispute
+from schemas.employee_record import EmployeeRecordCreate

@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from database import get_db
+from typing import Optional
 from models.company import CompanyDB
 from models.hr import CompanyHRDB
+from models.employee import EmployeeDB
+from models.employee_record import EmployeeRecordDB
 from schemas.hr import HRSignup, HRLogin
 from utils.id_generator import generate_custom_id
 
@@ -46,3 +49,44 @@ def hr_login(data: HRLogin, db: Session = Depends(get_db)):
     if hr:
         return {"message": "HR login successful", "HR_ID": hr.HR_ID, "Name": hr.Name}
     raise HTTPException(status_code=401, detail="Invalid company email or password")
+
+
+@router.get("/hr/{hr_id}/search-employee")
+def search_employee(hr_id: str, name: Optional[str] = None, pan: Optional[str] = None, db: Session = Depends(get_db)):
+    hr = db.query(CompanyHRDB).filter(CompanyHRDB.HR_ID == hr_id).first()
+    if not hr:
+        raise HTTPException(status_code=401, detail="Invalid HR ID")
+    
+    if not name and not pan:
+        raise HTTPException(status_code=400, detail="Must provide either name or pan to search")
+
+    query = db.query(EmployeeDB)
+    if pan:
+        query = query.filter(EmployeeDB.PanNumber == pan)
+    if name:
+        query = query.filter(EmployeeDB.Name.ilike(f"%{name}%"))
+        
+    employees = query.all()
+    
+    results = []
+    for emp in employees:
+        records_with_company = db.query(
+            EmployeeRecordDB, CompanyDB.Name.label("Company_Name")
+        ).join(
+            CompanyDB, EmployeeRecordDB.Company_ID == CompanyDB.Company_ID
+        ).filter(
+            EmployeeRecordDB.Employee_ID == emp.Employee_ID
+        ).all()
+        
+        formatted_records = []
+        for record, company_name in records_with_company:
+            record_data = {col.name: getattr(record, col.name) for col in record.__table__.columns}
+            record_data["Company_Name"] = company_name
+            formatted_records.append(record_data)
+
+        results.append({
+            "employee": emp,
+            "records": formatted_records
+        })
+        
+    return results

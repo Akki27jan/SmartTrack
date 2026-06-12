@@ -11,9 +11,14 @@ router = APIRouter()
 @router.post("/employee/signup")
 def employee_signup(data: EmployeeSignup, db: Session = Depends(get_db)):
     # Check for duplicate email
-    existing = db.query(EmployeeDB).filter(EmployeeDB.Email == data.Email).first()
-    if existing:
+    existing_email = db.query(EmployeeDB).filter(EmployeeDB.Email == data.Email).first()
+    if existing_email:
         raise HTTPException(status_code=400, detail="An employee with this email already exists")
+
+    # Check for duplicate PAN
+    existing_pan = db.query(EmployeeDB).filter(EmployeeDB.PanNumber == data.PanNumber).first()
+    if existing_pan:
+        raise HTTPException(status_code=400, detail="An employee with this PAN already exists")
 
     custom_id = generate_custom_id(data.Name, "E", db, EmployeeDB, EmployeeDB.Employee_ID)
 
@@ -21,7 +26,8 @@ def employee_signup(data: EmployeeSignup, db: Session = Depends(get_db)):
         Employee_ID=custom_id,
         Name=data.Name,
         Email=data.Email,
-        Password=data.Password
+        Password=data.Password,
+        PanNumber=data.PanNumber
     )
     db.add(new_employee)
     db.commit()
