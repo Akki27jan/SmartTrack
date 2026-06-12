@@ -67,6 +67,15 @@ class CompanyNotificationDB(Base):
     Status = Column(String, default="sent")
     Sent_Time = Column(DateTime, default=datetime.utcnow)
 
+class AuditLogDB(Base):
+    __tablename__ = "audit_logs"
+
+    Audit_Log_ID = Column(String, primary_key=True)
+    Created_At = Column(DateTime, default=datetime.utcnow)
+    HR_ID = Column(String, ForeignKey("company_hr.HR_ID"), nullable=False)
+    Action_Type = Column(String, nullable=False)
+    Employee_ID = Column(String, ForeignKey("employees.Employee_ID"), nullable=False)
+
 # ---------- Create all tables ----------
 
 Base.metadata.create_all(bind=engine)

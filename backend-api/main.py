@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
-from database import get_db, EmployeeDB, CompanyDB, CompanyHRDB, EmployeeNotificationDB, CompanyNotificationDB
+from database import get_db, EmployeeDB, CompanyDB, CompanyHRDB, EmployeeNotificationDB, CompanyNotificationDB, AuditLogDB
 
 app = FastAPI()
 
@@ -82,6 +82,10 @@ class CompanyNotification(BaseModel):
     Subject: str
     Message: str
 
+class AuditLog(BaseModel):
+    HR_ID: str
+    Action_Type: str
+    Employee_ID: str
 # ---------- ID generation helper ----------
 
 def generate_custom_id(name: str, type_char: str, db: Session, model_class, id_column) -> str:
@@ -94,6 +98,13 @@ def generate_custom_id(name: str, type_char: str, db: Session, model_class, id_c
     count = db.query(model_class).count()
     number = str(count + 1).zfill(3)
     return f"{prefix}{type_char}{number}"
+
+
+def generate_audit_log_id(db: Session) -> str:
+    """Generate an Audit Log ID in the format AUD000."""
+    count = db.query(AuditLogDB).count()
+    number = str(count + 1).zfill(3)
+    return f"AUD{number}"
 
 
 # ---------- Routes ----------
@@ -276,3 +287,39 @@ def get_company_notifications(company_id: str, db: Session = Depends(get_db)):
     ).all()
 
     return notifications
+
+@app.post("/audit-log")
+def create_audit_log(data: AuditLog, db: Session = Depends(get_db)):
+    hr = db.query(CompanyHRDB).filter(CompanyHRDB.HR_ID == data.HR_ID).first()
+    if not hr:
+        raise HTTPException(status_code=404, detail="HR not found")
+
+    employee = db.query(EmployeeDB).filter(EmployeeDB.Employee_ID == data.Employee_ID).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    log_id = generate_audit_log_id(db)
+
+    new_log = AuditLogDB(
+        Audit_Log_ID=log_id,
+        HR_ID=data.HR_ID,
+        Action_Type=data.Action_Type,
+        Employee_ID=data.Employee_ID
+    )
+    db.add(new_log)
+    db.commit()
+    db.refresh(new_log)
+
+    return {"message": "Audit log created", "Audit_Log_ID": log_id}
+
+
+@app.get("/audit-logs/hr/{hr_id}")
+def get_audit_logs_by_hr(hr_id: str, db: Session = Depends(get_db)):
+    logs = db.query(AuditLogDB).filter(AuditLogDB.HR_ID == hr_id).all()
+    return logs
+
+
+@app.get("/audit-logs/employee/{employee_id}")
+def get_audit_logs_by_employee(employee_id: str, db: Session = Depends(get_db)):
+    logs = db.query(AuditLogDB).filter(AuditLogDB.Employee_ID == employee_id).all()
+    return logs
