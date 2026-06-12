@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
-from database import get_db, EmployeeDB, CompanyDB, CompanyHRDB
+from database import get_db, EmployeeDB, CompanyDB, CompanyHRDB, EmployeeNotificationDB, CompanyNotificationDB
 
 app = FastAPI()
 
@@ -69,6 +69,18 @@ class HRLogin(BaseModel):
     Company_Email: EmailStr
     Password: str
 
+class EmployeeNotification(BaseModel):
+    Employee_ID: str
+    Type: str
+    Subject: str
+    Message: str
+
+
+class CompanyNotification(BaseModel):
+    Company_ID: str
+    Type: str
+    Subject: str
+    Message: str
 
 # ---------- ID generation helper ----------
 
@@ -198,3 +210,69 @@ def hr_login(data: HRLogin, db: Session = Depends(get_db)):
     if hr:
         return {"message": "HR login successful", "HR_ID": hr.HR_ID, "Name": hr.Name}
     raise HTTPException(status_code=401, detail="Invalid company email or password")
+
+
+@app.post("/employee/notification")
+def send_employee_notification(data: EmployeeNotification, db: Session = Depends(get_db)):
+    employee = db.query(EmployeeDB).filter(EmployeeDB.Employee_ID == data.Employee_ID).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    notification = EmployeeNotificationDB(
+        Employee_ID=data.Employee_ID,
+        Type=data.Type,
+        Subject=data.Subject,
+        Message=data.Message,
+        Status=True
+    )
+
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+
+    return {
+        "message": "Notification sent to employee",
+        "notification_id": notification.Notif_ID
+    }
+
+
+@app.post("/company/notification")
+def send_company_notification(data: CompanyNotification, db: Session = Depends(get_db)):
+    company = db.query(CompanyDB).filter(CompanyDB.Company_ID == data.Company_ID).first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    notification = CompanyNotificationDB(
+        Company_ID=data.Company_ID,
+        Type=data.Type,
+        Subject=data.Subject,
+        Message=data.Message,
+        Status="sent"
+    )
+
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+
+    return {
+        "message": "Notification sent to company",
+        "notification_id": notification.Notif_ID
+    }
+
+
+@app.get("/employee/{employee_id}/notifications")
+def get_employee_notifications(employee_id: str, db: Session = Depends(get_db)):
+    notifications = db.query(EmployeeNotificationDB).filter(
+        EmployeeNotificationDB.Employee_ID == employee_id
+    ).all()
+
+    return notifications
+
+
+@app.get("/company/{company_id}/notifications")
+def get_company_notifications(company_id: str, db: Session = Depends(get_db)):
+    notifications = db.query(CompanyNotificationDB).filter(
+        CompanyNotificationDB.Company_ID == company_id
+    ).all()
+
+    return notifications
